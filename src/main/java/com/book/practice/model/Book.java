@@ -1,9 +1,11 @@
 package com.book.practice.model;
 
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -14,8 +16,8 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    @ManyToOne
-    private Author author;
+    @ManyToMany
+    private List<Author> authors;
     @ManyToOne
     private Genre genre;
 
@@ -35,12 +37,12 @@ public class Book {
         this.title = title;
     }
 
-    public Author getAuthor() {
-        return author;
+    public List<Author> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
     }
 
     public Genre getGenre() {
@@ -55,7 +57,7 @@ public class Book {
     public String toString() {
         return "Book {" + "id=" + id
                 + ", title='" + title + '\''
-                + ", author=" + author
+                + ", authors=" + authors
                 + ", genre=" + genre + '}';
     }
 }

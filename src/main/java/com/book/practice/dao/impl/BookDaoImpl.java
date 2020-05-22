@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -47,7 +48,9 @@ public class BookDaoImpl implements BookDao {
             CriteriaQuery<Book> query = criteriaBuilder.createQuery(Book.class);
             Root<Book> root = query.from(Book.class);
             Predicate predicate = criteriaBuilder.equal(root.get("title"), title);
-            return session.createQuery(query.where(predicate)).getSingleResult();
+            Book book = session.createQuery(query.where(predicate)).getSingleResult();
+            Hibernate.initialize(book.getAuthors());
+            return book;
         } catch (Exception e) {
             throw new DataProcessingException(
                     "There was an error retrieving the book", e);
@@ -60,8 +63,10 @@ public class BookDaoImpl implements BookDao {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Book> query = criteriaBuilder.createQuery(Book.class);
             Root<Book> root = query.from(Book.class);
-            Predicate predicate = criteriaBuilder.equal(root.get("author"), author);
-            return session.createQuery(query.where(predicate)).getResultList();
+            Predicate predicate = criteriaBuilder.isMember(author, root.get("authors"));
+            List<Book> books = session.createQuery(query.where(predicate)).getResultList();
+            books.forEach(book -> Hibernate.initialize(book.getAuthors()));
+            return books;
         } catch (Exception e) {
             throw new DataProcessingException(
                     "There was an error retrieving the book", e);
@@ -75,7 +80,9 @@ public class BookDaoImpl implements BookDao {
             CriteriaQuery<Book> query = criteriaBuilder.createQuery(Book.class);
             Root<Book> root = query.from(Book.class);
             Predicate predicate = criteriaBuilder.equal(root.get("genre"), genre);
-            return session.createQuery(query.where(predicate)).getResultList();
+            List<Book> books = session.createQuery(query.where(predicate)).getResultList();
+            books.forEach(book -> Hibernate.initialize(book.getAuthors()));
+            return books;
         } catch (Exception e) {
             throw new DataProcessingException(
                     "There was an error retrieving the book", e);
