@@ -10,5 +10,9 @@
         <property name="connection.password">********</property>
         <property name="show_sql">true</property>
         <property name="hbm2ddl.auto">create-drop</property>
+
+        <mapping class="com.book.practice.model.Book"/>
+        <mapping class="com.book.practice.model.Author"/>
+        <mapping class="com.book.practice.model.Genre"/>
     </session-factory>
 </hibernate-configuration>
