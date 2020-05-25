@@ -10,6 +10,7 @@ import com.book.practice.util.HibernateUtil;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Hibernate;
@@ -47,10 +48,9 @@ public class BookDaoImpl implements BookDao {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Book> query = criteriaBuilder.createQuery(Book.class);
             Root<Book> root = query.from(Book.class);
+            root.fetch("authors", JoinType.INNER);
             Predicate predicate = criteriaBuilder.equal(root.get("title"), title);
-            Book book = session.createQuery(query.where(predicate)).getSingleResult();
-            Hibernate.initialize(book.getAuthors());
-            return book;
+            return session.createQuery(query.where(predicate)).getSingleResult();
         } catch (Exception e) {
             throw new DataProcessingException(
                     "There was an error retrieving the book", e);
@@ -63,10 +63,9 @@ public class BookDaoImpl implements BookDao {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Book> query = criteriaBuilder.createQuery(Book.class);
             Root<Book> root = query.from(Book.class);
+            root.fetch("authors", JoinType.INNER);
             Predicate predicate = criteriaBuilder.isMember(author, root.get("authors"));
-            List<Book> books = session.createQuery(query.where(predicate)).getResultList();
-            books.forEach(book -> Hibernate.initialize(book.getAuthors()));
-            return books;
+            return session.createQuery(query.where(predicate)).getResultList();
         } catch (Exception e) {
             throw new DataProcessingException(
                     "There was an error retrieving the book", e);
@@ -79,10 +78,9 @@ public class BookDaoImpl implements BookDao {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Book> query = criteriaBuilder.createQuery(Book.class);
             Root<Book> root = query.from(Book.class);
+            root.fetch("authors", JoinType.INNER);
             Predicate predicate = criteriaBuilder.equal(root.get("genre"), genre);
-            List<Book> books = session.createQuery(query.where(predicate)).getResultList();
-            books.forEach(book -> Hibernate.initialize(book.getAuthors()));
-            return books;
+            return session.createQuery(query.where(predicate)).getResultList();
         } catch (Exception e) {
             throw new DataProcessingException(
                     "There was an error retrieving the book", e);
